@@ -6,6 +6,50 @@
 
 > RuoYi 负责稳定的业务底座，Art Design Pro 负责现代化的交互与视觉体验。
 
+## 项目预览
+
+### 登录页
+
+![Art Design Pro RuoYi 登录页](docs/images/login-orange.png)
+
+### 仪表盘
+
+![Art Design Pro RuoYi 工作台](docs/images/dashboard-console-blue.png)
+
+### RuoYi 系统管理
+
+<table>
+  <tr>
+    <td><img src="docs/images/system-user-light.png" alt="用户管理"></td>
+    <td><img src="docs/images/system-role-permission.png" alt="角色权限"></td>
+  </tr>
+  <tr>
+    <td align="center">用户管理</td>
+    <td align="center">角色权限</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/system-menu-light.png" alt="菜单管理"></td>
+    <td><img src="docs/images/system-dept-light.png" alt="部门管理"></td>
+  </tr>
+  <tr>
+    <td align="center">菜单管理</td>
+    <td align="center">部门管理</td>
+  </tr>
+</table>
+
+### 主题配置
+
+<table>
+  <tr>
+    <td><img src="docs/images/theme-settings-pink.png" alt="主题配置"></td>
+    <td><img src="docs/images/dashboard-analysis-dark.png" alt="深色主题"></td>
+  </tr>
+  <tr>
+    <td align="center">主题色、菜单布局与样式切换</td>
+    <td align="center">深色主题与数据分析页</td>
+  </tr>
+</table>
+
 ## 项目特点
 
 - 保留 RuoYi RBAC、JWT、菜单权限、按钮权限和数据权限。
