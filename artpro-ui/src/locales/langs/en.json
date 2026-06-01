@@ -112,7 +112,7 @@
   "notice": {
     "title": "Notice",
     "btnRead": "Mark as read",
-    "bar": ["Notice", "Message", "Todo"],
+    "bar": ["Notice", "Announcement", "Todo"],
     "text": ["No"],
     "viewAll": "View all"
   },

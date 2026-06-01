@@ -65,3 +65,7 @@ set icon = case icon
   else 'ri:menu-line'
 end
 where icon is null or icon = '' or icon = '#' or icon not like 'ri:%';
+
+update sys_menu
+set is_full_page = '1'
+where menu_id = 118;

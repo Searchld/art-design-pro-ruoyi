@@ -118,7 +118,10 @@
           class="notice-button relative"
           @click="visibleNotice"
         >
-          <div class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"></div>
+          <div
+            v-if="totalUnread > 0"
+            class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"
+          ></div>
         </ArtIconButton>
 
         <!-- 聊天按钮 -->
@@ -178,6 +181,7 @@
   import { useSettingStore } from '@/store/modules/setting'
   import { useUserStore } from '@/store/modules/user'
   import { useMenuStore } from '@/store/modules/menu'
+  import { useNoticeStore } from '@/store/modules/notice'
   import AppConfig from '@/config'
   import { getSiteConfig } from '@/utils/site-config'
   import { languageOptions } from '@/locales'
@@ -199,6 +203,7 @@
   const settingStore = useSettingStore()
   const userStore = useUserStore()
   const menuStore = useMenuStore()
+  const noticeStore = useNoticeStore()
 
   // 顶部栏功能配置
   const {
@@ -221,6 +226,7 @@
 
   const { language } = storeToRefs(userStore)
   const { menuList } = storeToRefs(menuStore)
+  const { totalUnread } = storeToRefs(noticeStore)
 
   const showNotice = ref(false)
   const notice = ref(null)
@@ -235,10 +241,12 @@
 
   onMounted(() => {
     initLanguage()
+    noticeStore.startPolling()
     document.addEventListener('click', bodyCloseNotice)
   })
 
   onUnmounted(() => {
+    noticeStore.stopPolling()
     document.removeEventListener('click', bodyCloseNotice)
   })
 
@@ -336,6 +344,7 @@
    */
   const visibleNotice = (): void => {
     showNotice.value = !showNotice.value
+    if (showNotice.value) void noticeStore.refresh(true)
   }
 
   /**

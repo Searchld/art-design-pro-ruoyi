@@ -13,6 +13,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.web.filter.CorsFilter;
 import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
 import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
@@ -90,7 +96,18 @@ public class SecurityConfig
             .csrf(csrf -> csrf.disable())
             // 禁用HTTP响应标头
             .headers((headersCustomizer) -> {
-                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
+                // Druid 和 Swagger 由前端工作区内嵌展示，其余响应继续保留 SAMEORIGIN 防护。
+                OrRequestMatcher embeddedPageMatcher = new OrRequestMatcher(
+                    PathPatternRequestMatcher.pathPattern("/druid/**"),
+                    PathPatternRequestMatcher.pathPattern("/swagger-ui.html"),
+                    PathPatternRequestMatcher.pathPattern("/swagger-ui/**")
+                );
+                headersCustomizer.cacheControl(cache -> cache.disable())
+                    .frameOptions(options -> options.disable())
+                    .addHeaderWriter(new DelegatingRequestMatcherHeaderWriter(
+                        new NegatedRequestMatcher(embeddedPageMatcher),
+                        new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN)
+                    ));
             })
             // 认证失败处理类
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))

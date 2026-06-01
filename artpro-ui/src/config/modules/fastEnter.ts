@@ -46,24 +46,24 @@ const fastEnterConfig: FastEnterConfig = {
       order: 4,
       routeName: 'Chat'
     },
-    {
-      name: '官方文档',
-      description: '使用指南与开发文档',
-      icon: 'ri:bill-line',
-      iconColor: '#ffb100',
-      enabled: true,
-      order: 5,
-      link: WEB_LINKS.DOCS
-    },
-    {
-      name: '技术支持',
-      description: '技术支持与问题反馈',
-      icon: 'ri:user-location-line',
-      iconColor: '#ff6b6b',
-      enabled: true,
-      order: 6,
-      link: WEB_LINKS.COMMUNITY
-    },
+    // {
+    //   name: '官方文档',
+    //   description: '使用指南与开发文档',
+    //   icon: 'ri:bill-line',
+    //   iconColor: '#ffb100',
+    //   enabled: true,
+    //   order: 5,
+    //   link: WEB_LINKS.DOCS
+    // },
+    // {
+    //   name: '技术支持',
+    //   description: '技术支持与问题反馈',
+    //   icon: 'ri:user-location-line',
+    //   iconColor: '#ff6b6b',
+    //   enabled: true,
+    //   order: 6,
+    //   link: WEB_LINKS.COMMUNITY
+    // },
     {
       name: '更新日志',
       description: '版本更新与变更记录',
@@ -72,16 +72,16 @@ const fastEnterConfig: FastEnterConfig = {
       enabled: true,
       order: 7,
       routeName: 'ChangeLog'
-    },
-    {
-      name: '哔哩哔哩',
-      description: '技术分享与交流',
-      icon: 'ri:bilibili-line',
-      iconColor: '#FB7299',
-      enabled: true,
-      order: 8,
-      link: WEB_LINKS.BILIBILI
     }
+    // {
+    //   name: '哔哩哔哩',
+    //   description: '技术分享与交流',
+    //   icon: 'ri:bilibili-line',
+    //   iconColor: '#FB7299',
+    //   enabled: true,
+    //   order: 8,
+    //   link: WEB_LINKS.BILIBILI
+    // }
   ],
   // 快速链接
   quickLinks: [
@@ -103,12 +103,12 @@ const fastEnterConfig: FastEnterConfig = {
       order: 3,
       routeName: 'ForgetPassword'
     },
-    {
-      name: '定价',
-      enabled: true,
-      order: 4,
-      routeName: 'Pricing'
-    },
+    // {
+    //   name: '定价',
+    //   enabled: true,
+    //   order: 4,
+    //   routeName: 'Pricing'
+    // },
     {
       name: '个人中心',
       enabled: true,

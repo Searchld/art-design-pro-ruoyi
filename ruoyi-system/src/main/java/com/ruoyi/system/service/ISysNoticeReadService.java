@@ -25,7 +25,7 @@ public interface ISysNoticeReadService
      * @param userId 用户ID
      * @return 未读数量
      */
-    public int selectUnreadCount(Long userId);
+    public int selectUnreadCount(Long userId, String noticeType);
 
     /**
      * 查询公告列表并标记当前用户已读状态（用于首页展示）
@@ -34,7 +34,7 @@ public interface ISysNoticeReadService
      * @param limit  最多返回条数
      * @return 带 isRead 标记的公告列表
      */
-    public List<SysNotice> selectNoticeListWithReadStatus(Long userId, int limit);
+    public List<SysNotice> selectNoticeListWithReadStatus(Long userId, String noticeType, int limit);
 
     /**
      * 批量标记已读
@@ -43,6 +43,13 @@ public interface ISysNoticeReadService
      * @param noticeIds 公告ID数组
      */
     public void markReadBatch(Long userId, Long[] noticeIds);
+
+    /**
+     * 标记全部正常状态公告为已读
+     *
+     * @param userId 用户ID
+     */
+    public void markReadAll(Long userId);
 
     /**
      * 查询已阅读某公告的用户列表

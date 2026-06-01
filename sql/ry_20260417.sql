@@ -164,7 +164,7 @@ insert into sys_menu values('9000', '仪表盘', '0', '1', 'dashboard',        n
 insert into sys_menu values('1', '系统管理', '0', '2', 'system',           null, '', '', 1, 0, 'M', '0', '0', '', 'system',   'admin', sysdate(), '', null, '系统管理目录');
 insert into sys_menu values('2', '系统监控', '0', '3', 'monitor',          null, '', '', 1, 0, 'M', '0', '0', '', 'monitor',  'admin', sysdate(), '', null, '系统监控目录');
 insert into sys_menu values('3', '系统工具', '0', '4', 'tool',             null, '', '', 1, 0, 'M', '0', '0', '', 'tool',     'admin', sysdate(), '', null, '系统工具目录');
-insert into sys_menu values('4', '数据大屏', '0', '5', 'http://ruoyi.vip', null, '', '', 0, 0, 'M', '0', '0', '', 'guide',    'admin', sysdate(), '', null, '数据大屏内嵌地址');
+insert into sys_menu values('4', '数据大屏', '0', '5', 'screen',           null, '', 'Screen', 1, 0, 'M', '0', '0', '', 'guide',    'admin', sysdate(), '', null, '数据大屏目录');
 -- 二级菜单
 insert into sys_menu values('9001', '工作台', '9000', '1', 'console',   'dashboard/console/index',   '', 'Console',   1, 1, 'C', '0', '0', '', 'console',   'admin', sysdate(), '', null, '仪表盘工作台菜单');
 insert into sys_menu values('9002', '分析页', '9000', '2', 'analysis',  'dashboard/analysis/index',  '', 'Analysis',  1, 1, 'C', '0', '0', '', 'analysis',  'admin', sysdate(), '', null, '仪表盘分析页菜单');
@@ -187,6 +187,7 @@ insert into sys_menu values('114',  '缓存列表', '2',   '6', 'cacheList',  'm
 insert into sys_menu values('115',  '表单构建', '3',   '1', 'build',      'tool/build/index',         '', '', 1, 0, 'C', '0', '0', 'tool:build:list',         'build',         'admin', sysdate(), '', null, '表单构建菜单');
 insert into sys_menu values('116',  '代码生成', '3',   '2', 'gen',        'tool/gen/index',           '', '', 1, 0, 'C', '0', '0', 'tool:gen:list',           'code',          'admin', sysdate(), '', null, '代码生成菜单');
 insert into sys_menu values('117',  '系统接口', '3',   '3', 'swagger',    'tool/swagger/index',       '', '', 1, 0, 'C', '0', '0', 'tool:swagger:list',       'swagger',       'admin', sysdate(), '', null, '系统接口菜单');
+insert into sys_menu values('118',  '大屏展示', '4',   '1', 'display',    'screen/display/index',     '', 'ScreenDisplay', 1, 0, 'C', '0', '0', '',             'guide',         'admin', sysdate(), '', null, '溜井数字化监控大屏');
 -- 三级菜单
 insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate(), '', null, '操作日志菜单');
 insert into sys_menu values('501',  '登录日志', '108', '2', 'logininfor', 'monitor/logininfor/index', '', '', 1, 0, 'C', '0', '0', 'monitor:logininfor:list', 'logininfor',    'admin', sysdate(), '', null, '登录日志菜单');
@@ -322,6 +323,7 @@ insert into sys_role_menu values ('2', '114');
 insert into sys_role_menu values ('2', '115');
 insert into sys_role_menu values ('2', '116');
 insert into sys_role_menu values ('2', '117');
+insert into sys_role_menu values ('2', '118');
 insert into sys_role_menu values ('2', '500');
 insert into sys_role_menu values ('2', '501');
 insert into sys_role_menu values ('2', '1000');
@@ -520,6 +522,7 @@ insert into sys_dict_data values(12, 1,  '是',       'Y',       'sys_yes_no',  
 insert into sys_dict_data values(13, 2,  '否',       'N',       'sys_yes_no',          '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '系统默认否');
 insert into sys_dict_data values(14, 1,  '通知',     '1',       'sys_notice_type',     '',   'warning', 'Y', '0', 'admin', sysdate(), '', null, '通知');
 insert into sys_dict_data values(15, 2,  '公告',     '2',       'sys_notice_type',     '',   'success', 'N', '0', 'admin', sysdate(), '', null, '公告');
+insert into sys_dict_data values(30, 3,  '待办',     '3',       'sys_notice_type',     '',   'info',    'N', '0', 'admin', sysdate(), '', null, '待办');
 insert into sys_dict_data values(16, 1,  '正常',     '0',       'sys_notice_status',   '',   'primary', 'Y', '0', 'admin', sysdate(), '', null, '正常状态');
 insert into sys_dict_data values(17, 2,  '关闭',     '1',       'sys_notice_status',   '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '关闭状态');
 insert into sys_dict_data values(18, 99, '其他',     '0',       'sys_oper_type',       '',   'info',    'N', '0', 'admin', sysdate(), '', null, '其他操作');
@@ -683,7 +686,7 @@ create table gen_table (
   sub_table_fk_name varchar(64)     default null               comment '子表关联的外键名',
   class_name        varchar(100)    default ''                 comment '实体类名称',
   tpl_category      varchar(200)    default 'crud'             comment '使用的模板（crud单表操作 tree树表操作）',
-  tpl_web_type      varchar(30)     default ''                 comment '前端模板类型（element-ui模版 element-plus模版）',
+  tpl_web_type      varchar(30)     default 'art-design-pro'   comment '前端模板类型（Art Design Pro、element-ui、element-plus模版）',
   package_name      varchar(100)                               comment '生成包路径',
   module_name       varchar(30)                                comment '生成模块名',
   business_name     varchar(30)                                comment '生成业务名',

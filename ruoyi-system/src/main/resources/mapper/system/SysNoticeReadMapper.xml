@@ -21,6 +21,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectUnreadCount" resultType="int">
         select count(*) from sys_notice n
         where n.status = '0' and not exists (select 1 from sys_notice_read r where r.notice_id = n.notice_id and r.user_id = #{userId})
+        <if test="noticeType != null and noticeType != ''">
+            and n.notice_type = #{noticeType}
+        </if>
     </select>
 
     <!-- 查询是否已读 -->
@@ -42,6 +45,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_notice_read r
             on r.notice_id = n.notice_id and r.user_id = #{userId}
         where n.status = '0'
+        <if test="noticeType != null and noticeType != ''">
+            and n.notice_type = #{noticeType}
+        </if>
         order by n.notice_id desc
         limit #{limit}
     </select>
@@ -53,6 +59,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <foreach collection="noticeIds" item="noticeId" separator=",">
             (#{noticeId}, #{userId}, sysdate())
         </foreach>
+    </insert>
+
+    <!-- 标记全部正常状态公告为已读 -->
+    <insert id="insertNoticeReadAll">
+        insert ignore into sys_notice_read (notice_id, user_id, read_time)
+        select notice_id, #{userId}, sysdate()
+        from sys_notice
+        where status = '0'
     </insert>
 
     <!-- 删除公告时清理已读记录 -->

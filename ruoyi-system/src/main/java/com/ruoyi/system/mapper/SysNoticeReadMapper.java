@@ -27,7 +27,7 @@ public interface SysNoticeReadMapper
      * @param userId 用户ID
      * @return 未读数量
      */
-    public int selectUnreadCount(@Param("userId") Long userId);
+    public int selectUnreadCount(@Param("userId") Long userId, @Param("noticeType") String noticeType);
 
     /**
      * 查询某用户是否已读某公告
@@ -48,13 +48,21 @@ public interface SysNoticeReadMapper
     public int insertNoticeReadBatch(@Param("userId") Long userId, @Param("noticeIds") Long[] noticeIds);
 
     /**
+     * 标记全部正常状态公告为已读
+     *
+     * @param userId 用户ID
+     * @return 结果
+     */
+    public int insertNoticeReadAll(@Param("userId") Long userId);
+
+    /**
      * 查询带已读状态的公告列表（SQL层限制条数，一次查询完成）
      *
      * @param userId 用户ID
      * @param limit  最多返回条数
      * @return 带 isRead 标记的公告列表
      */
-    public List<SysNotice> selectNoticeListWithReadStatus(@Param("userId") Long userId, @Param("limit") int limit);
+    public List<SysNotice> selectNoticeListWithReadStatus(@Param("userId") Long userId, @Param("noticeType") String noticeType, @Param("limit") int limit);
 
     /**
      * 查询已阅读某公告的用户列表

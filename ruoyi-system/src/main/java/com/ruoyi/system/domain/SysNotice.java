@@ -23,7 +23,7 @@ public class SysNotice extends BaseEntity
     /** 公告标题 */
     private String noticeTitle;
 
-    /** 公告类型（1通知 2公告） */
+    /** 公告类型（1通知 2公告 3待办） */
     private String noticeType;
 
     /** 公告内容 */

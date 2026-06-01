@@ -9,9 +9,27 @@ export interface Profile extends Entity {
   phonenumber?: string
   sex?: string
   avatar?: string
+  dept?: {
+    deptName?: string
+  }
+  roleGroup?: string
+  postGroup?: string
 }
 
-export const fetchProfile = () => request.get<Profile>({ url: '/system/user/profile' })
+interface ProfileResponse {
+  data?: Profile
+  roleGroup?: string
+  postGroup?: string
+}
+
+export const fetchProfile = () =>
+  request
+    .get<ProfileResponse>({ url: '/system/user/profile', unwrapData: false })
+    .then(({ data, roleGroup, postGroup }) => ({
+      ...data,
+      roleGroup,
+      postGroup
+    }))
 export const updateProfile = (data: Profile) =>
   request.put<void>({ url: '/system/user/profile', data, showSuccessMessage: true })
 export const updatePassword = (oldPassword: string, newPassword: string) =>

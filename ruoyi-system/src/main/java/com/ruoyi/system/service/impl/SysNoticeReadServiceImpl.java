@@ -36,18 +36,18 @@ public class SysNoticeReadServiceImpl implements ISysNoticeReadService
      * 查询某用户未读公告数量
      */
     @Override
-    public int selectUnreadCount(Long userId)
+    public int selectUnreadCount(Long userId, String noticeType)
     {
-        return noticeReadMapper.selectUnreadCount(userId);
+        return noticeReadMapper.selectUnreadCount(userId, noticeType);
     }
 
     /**
      * 查询公告列表并标记当前用户已读状态
      */
     @Override
-    public List<SysNotice> selectNoticeListWithReadStatus(Long userId, int limit)
+    public List<SysNotice> selectNoticeListWithReadStatus(Long userId, String noticeType, int limit)
     {
-        return noticeReadMapper.selectNoticeListWithReadStatus(userId, limit);
+        return noticeReadMapper.selectNoticeListWithReadStatus(userId, noticeType, limit);
     }
 
     /**
@@ -61,6 +61,15 @@ public class SysNoticeReadServiceImpl implements ISysNoticeReadService
             return;
         }
         noticeReadMapper.insertNoticeReadBatch(userId, noticeIds);
+    }
+
+    /**
+     * 标记全部正常状态公告为已读
+     */
+    @Override
+    public void markReadAll(Long userId)
+    {
+        noticeReadMapper.insertNoticeReadAll(userId);
     }
 
     /**

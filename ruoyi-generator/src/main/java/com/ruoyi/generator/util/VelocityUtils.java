@@ -35,6 +35,12 @@ public class VelocityUtils
     /** Vue3 Element Plus TypeScript 模版 */
     private static final String ELEMENT_PLUS_TYPESSRIPT = "element-plus-typescript";
 
+    /** Vue3 Element Plus TypeScript 模版（前端兼容值） */
+    private static final String ELEMENT_PLUS_TS = "element-plus-ts";
+
+    /** Art Design Pro TypeScript 模版 */
+    public static final String ART_DESIGN_PRO = "art-design-pro";
+
     /**
      * 设置模板变量信息
      *
@@ -154,10 +160,15 @@ public class VelocityUtils
         {
             useWebType = "vm/vue/v3";
         }
-        else if (StringUtils.equals(ELEMENT_PLUS_TYPESSRIPT, tplWebType))
+        else if (StringUtils.equalsAny(tplWebType, ELEMENT_PLUS_TYPESSRIPT, ELEMENT_PLUS_TS))
         {
             useWebType = "vm/vue/v3ts";
             apiTemplate = "vm/ts/api.ts.vm";
+        }
+        else if (StringUtils.equals(ART_DESIGN_PRO, tplWebType))
+        {
+            useWebType = "vm/vue/artpro";
+            apiTemplate = "vm/artpro/api.ts.vm";
         }
         List<String> templates = new ArrayList<String>();
         templates.add("vm/java/domain.java.vm");
@@ -168,7 +179,7 @@ public class VelocityUtils
         templates.add("vm/xml/mapper.xml.vm");
         templates.add("vm/sql/sql.vm");
         templates.add(apiTemplate);
-        if (StringUtils.equals(ELEMENT_PLUS_TYPESSRIPT, tplWebType))
+        if (StringUtils.equalsAny(tplWebType, ELEMENT_PLUS_TYPESSRIPT, ELEMENT_PLUS_TS))
         {
             templates.add("vm/ts/type.ts.vm");
             templates.add("vm/ts/index.ts.vm");

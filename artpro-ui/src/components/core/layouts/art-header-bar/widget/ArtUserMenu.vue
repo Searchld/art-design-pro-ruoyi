@@ -37,10 +37,10 @@
             <ArtSvgIcon icon="ri:user-3-line" />
             <span>{{ $t('topBar.user.userCenter') }}</span>
           </li>
-          <li class="btn-item" @click="toDocs()">
+          <!-- <li class="btn-item" @click="toDocs()">
             <ArtSvgIcon icon="ri:book-2-line" />
             <span>{{ $t('topBar.user.docs') }}</span>
-          </li>
+          </li> -->
           <li class="btn-item" @click="toGithub()">
             <ArtSvgIcon icon="ri:github-line" />
             <span>{{ $t('topBar.user.github') }}</span>

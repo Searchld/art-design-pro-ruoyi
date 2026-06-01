@@ -45,6 +45,7 @@
         /></ElFormItem>
         <ElFormItem label="前端模板">
           <ElSelect v-model="tplWebType" style="width: 220px">
+            <ElOption label="Art Design Pro TypeScript" value="art-design-pro" />
             <ElOption label="Element Plus TypeScript" value="element-plus-ts" />
             <ElOption label="Element Plus" value="element-plus" />
             <ElOption label="Element UI" value="element-ui" />
@@ -117,7 +118,7 @@
     <ElDrawer v-model="previewVisible" title="代码预览" size="88%">
       <ElTabs v-model="previewTab">
         <ElTabPane v-for="(content, file) in preview" :key="file" :label="file" :name="file">
-          <pre class="max-h-[66vh] overflow-auto rounded bg-[#f5f7fa] p-4 text-xs">{{
+          <pre class="code-preview max-h-[66vh] overflow-auto rounded p-4 text-xs">{{
             content
           }}</pre>
         </ElTabPane>
@@ -158,8 +159,9 @@
   const dbFilters = reactive<Entity>({}),
     dbTables = ref<Entity[]>([]),
     dbSelection = ref<Entity[]>([])
-  const tplWebType = ref('element-plus-ts')
+  const tplWebType = ref('art-design-pro')
   const form = reactive<Entity>({ columns: [] })
+  const genTables = ref<Entity[]>([])
   const preview = ref<Record<string, string>>({}),
     previewTab = ref('')
   const searchItems = [
@@ -185,6 +187,17 @@
     { prop: 'isQuery', label: '查询' },
     { prop: 'isRequired', label: '必填' }
   ]
+  const columnOptions = computed(() =>
+    (form.columns || []).map((column: Entity) => ({
+      label: `${column.columnName}：${column.columnComment}`,
+      value: column.columnName
+    }))
+  )
+  const tableOptions = computed(() =>
+    genTables.value
+      .filter((table) => table.tableName !== form.tableName)
+      .map((table) => ({ label: `${table.tableName}：${table.tableComment}`, value: table.tableName }))
+  )
   const formItems = computed(() => [
     { key: 'tableName', label: '表名称', type: 'input', span: 8, props: { disabled: true } },
     { key: 'tableComment', label: '表描述', type: 'input', span: 8 },
@@ -206,6 +219,74 @@
           { label: '主子表', value: 'sub' }
         ]
       }
+    },
+    {
+      key: 'tplWebType',
+      label: '前端模板',
+      type: 'select',
+      span: 8,
+      props: {
+        options: [
+          { label: 'Art Design Pro TypeScript', value: 'art-design-pro' },
+          { label: 'Element Plus TypeScript', value: 'element-plus-ts' },
+          { label: 'Element Plus', value: 'element-plus' },
+          { label: 'Element UI', value: 'element-ui' }
+        ]
+      }
+    },
+    {
+      key: 'formColNum',
+      label: '表单列数',
+      type: 'select',
+      span: 8,
+      props: {
+        options: [
+          { label: '单列', value: 1 },
+          { label: '双列', value: 2 },
+          { label: '三列', value: 3 }
+        ]
+      }
+    },
+    { key: 'parentMenuId', label: '上级菜单 ID', type: 'number', span: 8, props: { min: 0 } },
+    { key: 'view', label: '生成详情页', type: 'switch', span: 8 },
+    {
+      key: 'treeCode',
+      label: '树编码字段',
+      type: 'select',
+      span: 8,
+      hidden: form.tplCategory !== 'tree',
+      props: { options: columnOptions.value }
+    },
+    {
+      key: 'treeParentCode',
+      label: '树父编码字段',
+      type: 'select',
+      span: 8,
+      hidden: form.tplCategory !== 'tree',
+      props: { options: columnOptions.value }
+    },
+    {
+      key: 'treeName',
+      label: '树名称字段',
+      type: 'select',
+      span: 8,
+      hidden: form.tplCategory !== 'tree',
+      props: { options: columnOptions.value }
+    },
+    {
+      key: 'subTableName',
+      label: '关联子表',
+      type: 'select',
+      span: 8,
+      hidden: form.tplCategory !== 'sub',
+      props: { options: tableOptions.value }
+    },
+    {
+      key: 'subTableFkName',
+      label: '子表外键',
+      type: 'input',
+      span: 8,
+      hidden: form.tplCategory !== 'sub'
     },
     {
       key: 'genType',
@@ -232,7 +313,7 @@
         { prop: 'className', label: '实体类', minWidth: 120 },
         { prop: 'tplCategory', label: '模板', width: 90 },
         { prop: 'updateTime', label: '更新时间', width: 170 },
-        { prop: 'operation', label: '操作', fixed: 'right', width: 210, formatter: actions }
+        { prop: 'operation', label: '操作', align: 'right', fixed: 'right', minWidth: 220, formatter: actions }
       ]
     }
   })
@@ -255,7 +336,7 @@
       { key: 'download', label: '下载代码' },
       { key: 'generate', label: '生成到路径' }
     ]
-    return h('div', [
+    return h('div', { style: 'display:flex;align-items:center;justify-content:flex-end;gap:10px;white-space:nowrap' }, [
       hasAuth('tool:gen:preview')
         ? h(ArtButtonTable, { type: 'view', onClick: () => openPreview(row) })
         : null,
@@ -291,12 +372,23 @@
   }
   async function openEdit(row: Entity) {
     const result = await fetchGenInfo(row.tableId)
+    genTables.value = result.tables
     Object.keys(form).forEach((key) => delete form[key])
     Object.assign(form, result.info, { columns: result.rows })
     editVisible.value = true
   }
   async function save() {
-    await updateGen(form)
+    await updateGen({
+      ...form,
+      params: {
+        treeCode: form.treeCode,
+        treeParentCode: form.treeParentCode,
+        treeName: form.treeName,
+        parentMenuId: form.parentMenuId,
+        parentMenuName: form.parentMenuName,
+        genView: form.view
+      }
+    })
     editVisible.value = false
     refreshData()
   }
@@ -323,3 +415,11 @@
     downloadBatchGen(selection.value.map((item) => item.tableName).join(','))
   }
 </script>
+
+<style scoped>
+  .code-preview {
+    color: var(--art-gray-900);
+    border: 1px solid var(--default-border);
+    background: var(--default-bg-color);
+  }
+</style>
