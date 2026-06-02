@@ -59,6 +59,9 @@ Art Dashboard 保留为默认首页。仪表盘目录、工作台、分析页和
 ## 系统工具接入
 
 - 代码生成：查询、导入数据库表、编辑生成配置、字段配置、删除、同步数据库、代码预览、单表下载、批量下载和生成到自定义路径。
+- 新增 `art-design-pro` 前端模板类型，导入表时默认选中 Art Design Pro TypeScript；同时保留 Element Plus 模板供手动切换。
+- Art 模板覆盖单表 CRUD、树表、主子表和可选详情页，生成 `ArtSearchBar`、`ArtTableHeader`、`ArtTable`、`ArtForm`、`useTable`、`useDict`、`DictTag`、上传字段、富文本字段、`v-auth` 权限和 TypeScript API 文件。
+- 现有数据库执行 `sql/20260601_default_art_design_pro_generator.sql` 后，仅修改新导入表的默认模板，不批量覆盖已有 `gen_table` 记录。
 - 表单构建：当前保留 Art 本地占位页面，不增加后端接口；完整可视化设计器列入后续计划。
 - 系统接口：通过 iframe 内嵌 `/swagger-ui.html`。
 

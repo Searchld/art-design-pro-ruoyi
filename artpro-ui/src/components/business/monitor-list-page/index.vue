@@ -38,9 +38,11 @@
     </ElCard>
     <ElDrawer v-model="detailVisible" title="查看详情" size="680px">
       <ElDescriptions :column="1" border>
-        <ElDescriptionsItem v-for="field in fields" :key="field.prop" :label="field.label">
+        <ElDescriptionsItem v-for="field in detailFields" :key="field.prop" :label="field.label">
           <DictTag v-if="field.dict" :options="field.dict" :value="detail[field.prop]" />
-          <span v-else>{{ detail[field.prop] ?? '-' }}</span>
+          <span v-else class="whitespace-pre-wrap break-all">{{
+            field.formatter?.(detail) ?? detail[field.prop] ?? '-'
+          }}</span>
         </ElDescriptionsItem>
       </ElDescriptions>
     </ElDrawer>
@@ -62,8 +64,16 @@
     label: string
     width?: number
     minWidth?: number
-    search?: boolean
+    table?: boolean
+    detail?: boolean
+    search?:
+      | boolean
+      | {
+          type?: string
+          props?: Record<string, unknown>
+        }
     dict?: DictData[]
+    formatter?: (row: Entity) => unknown
   }
   const props = withDefaults(
     defineProps<{
@@ -74,6 +84,7 @@
       removeFn?: (id: string | number) => Promise<unknown>
       cleanFn?: () => Promise<unknown>
       exportUrl?: string
+      transformParams?: (params: Entity) => Query
       actions?: Array<{
         key: string
         label: string
@@ -89,11 +100,25 @@
   const showSearchBar = ref(true)
   const detailVisible = ref(false)
   const detail = reactive<Entity>({})
+  const detailFields = computed(() => props.fields.filter((field) => field.detail !== false))
   const searchItems = computed(() =>
     props.fields
       .filter((field) => field.search)
-      .map((field) => ({ key: field.prop, label: field.label }))
+      .map((field) => ({
+        key: field.prop,
+        label: field.label,
+        ...(typeof field.search === 'object' ? field.search : {})
+      }))
   )
+  const toColumn = (field: MonitorField): ColumnOption => ({
+    ...field,
+    showOverflowTooltip: true,
+    formatter:
+      field.formatter ||
+      (field.dict
+        ? (row: Entity) => h(DictTag, { options: field.dict!, value: row[field.prop] })
+        : undefined)
+  })
   const {
     data,
     columns,
@@ -105,19 +130,16 @@
     resetSearchParams,
     refreshData,
     handleSizeChange,
-    handleCurrentChange
+    handleCurrentChange,
+    updateColumn
   } = useTable({
     core: {
       apiFn: props.listFn,
       apiParams: { pageNum: 1, pageSize: 10 },
       columnsFactory: () => {
-        const result: ColumnOption[] = props.fields.map((field) => ({
-          ...field,
-          showOverflowTooltip: true,
-          formatter: field.dict
-            ? (row: Entity) => h(DictTag, { options: field.dict!, value: row[field.prop] })
-            : undefined
-        }))
+        const result: ColumnOption[] = props.fields
+          .filter((field) => field.table !== false)
+          .map(toColumn)
         if (hasAuth(`${props.permission}:query`) || props.removeFn || props.actions.length)
           result.push({
             prop: 'operation',
@@ -126,28 +148,47 @@
             fixed: 'right',
             minWidth: 220,
             formatter: (row: Entity) =>
-              h('div', { style: 'display:flex;align-items:center;justify-content:flex-end;gap:10px;white-space:nowrap' }, [
-                hasAuth(`${props.permission}:query`)
-                  ? h(ArtButtonTable, { type: 'view', onClick: () => viewRow(row) })
-                  : null,
-                props.removeFn && hasAuth(`${props.permission}:remove`)
-                  ? h(ArtButtonTable, { type: 'delete', onClick: () => removeRow(row) })
-                  : null,
-                props.actions.length
-                  ? h(ArtButtonMore, {
-                      list: props.actions,
-                      onClick: (item: { key: string | number }) =>
-                        props.actions.find((action) => action.key === item.key)?.handler(row)
-                    })
-                  : null
-              ])
+              h(
+                'div',
+                {
+                  style:
+                    'display:flex;align-items:center;justify-content:flex-end;gap:10px;white-space:nowrap'
+                },
+                [
+                  hasAuth(`${props.permission}:query`)
+                    ? h(ArtButtonTable, { type: 'view', onClick: () => viewRow(row) })
+                    : null,
+                  props.removeFn && hasAuth(`${props.permission}:remove`)
+                    ? h(ArtButtonTable, { type: 'delete', onClick: () => removeRow(row) })
+                    : null,
+                  props.actions.length
+                    ? h(ArtButtonMore, {
+                        list: props.actions,
+                        onClick: (item: { key: string | number }) =>
+                          props.actions.find((action) => action.key === item.key)?.handler(row)
+                      })
+                    : null
+                ]
+              )
           })
         return result
       }
     }
   })
+  watch(
+    () => props.fields,
+    (fields) => {
+      updateColumn?.(
+        fields
+          .filter((field) => field.table !== false)
+          .map((field) => ({ prop: field.prop, updates: toColumn(field) }))
+      )
+    },
+    { deep: true }
+  )
+  const buildParams = () => props.transformParams?.({ ...filters }) || { ...filters }
   function search() {
-    replaceSearchParams({ ...filters })
+    replaceSearchParams(buildParams())
     getData()
   }
   function reset() {
@@ -156,7 +197,7 @@
     getData()
   }
   function exportData() {
-    download(props.exportUrl!, filters, `export_${Date.now()}.xlsx`)
+    download(props.exportUrl!, buildParams(), `export_${Date.now()}.xlsx`)
   }
   async function clean() {
     await ElMessageBox.confirm('确定清空全部记录吗？', '提示', { type: 'warning' })

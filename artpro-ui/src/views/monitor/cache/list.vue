@@ -3,12 +3,13 @@
     ><ElRow :gutter="16" class="h-full">
       <ElCol :span="7"
         ><ElCard header="缓存名称" class="h-full"
-          ><ElButton type="danger" class="mb-3" @click="clearAll">清空全部</ElButton
+          ><ElButton v-if="canRemove" type="danger" class="mb-3" @click="clearAll"
+            >清空全部</ElButton
           ><ElTable :data="names" highlight-current-row @current-change="selectName"
             ><ElTableColumn prop="remark" label="名称" /><ElTableColumn
               prop="cacheName"
               label="缓存键"
-            /><ElTableColumn label="操作" width="72"
+            /><ElTableColumn v-if="canRemove" label="操作" width="72"
               ><template #default="{ row }"
                 ><ElButton link type="danger" @click.stop="clearName(row)">清理</ElButton></template
               ></ElTableColumn
@@ -23,6 +24,7 @@
             highlight-current-row
             @current-change="selectKey"
             ><ElTableColumn prop="cacheKey" label="缓存键名" /><ElTableColumn
+              v-if="canRemove"
               label="操作"
               width="72"
               ><template #default="{ row }"
@@ -32,7 +34,7 @@
           ></ElCard
         ></ElCol
       >
-      <ElCol :span="10"
+      <ElCol v-if="canQuery" :span="10"
         ><ElCard header="缓存内容" class="h-full"
           ><ElDescriptions :column="1" border
             ><ElDescriptionsItem label="缓存名称">{{ value.cacheName }}</ElDescriptionsItem
@@ -57,7 +59,11 @@
     fetchCacheValue
   } from '@/api/monitor'
   import type { Entity } from '@/api/system/types'
+  import { useAuth } from '@/hooks/core/useAuth'
   defineOptions({ name: 'MonitorCacheList' })
+  const { hasAuth } = useAuth()
+  const canQuery = computed(() => hasAuth('monitor:cache:query'))
+  const canRemove = computed(() => hasAuth('monitor:cache:remove'))
   const names = ref<Entity[]>([]),
     keys = ref<string[]>([]),
     value = ref<Entity>({})
@@ -67,7 +73,7 @@
     value.value = {}
   }
   async function selectKey(row?: Entity) {
-    if (!row) return
+    if (!row || !canQuery.value) return
     const name = names.value.find((item) => row.cacheKey.startsWith(item.cacheName))
     if (name) value.value = await fetchCacheValue(name.cacheName, row.cacheKey)
   }

@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysCache;
 
@@ -85,7 +87,8 @@ public class CacheController
         return AjaxResult.success(new TreeSet<>(cacheKeys));
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
+    @PreAuthorize("@ss.hasPermi('monitor:cache:query')")
+    @Log(title = "缓存详情", businessType = BusinessType.OTHER, isSaveResponseData = false)
     @GetMapping("/getValue/{cacheName}/{cacheKey}")
     public AjaxResult getCacheValue(@PathVariable String cacheName, @PathVariable String cacheKey)
     {
@@ -94,7 +97,8 @@ public class CacheController
         return AjaxResult.success(sysCache);
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
+    @PreAuthorize("@ss.hasPermi('monitor:cache:remove')")
+    @Log(title = "缓存清理", businessType = BusinessType.CLEAN, isSaveResponseData = false)
     @DeleteMapping("/clearCacheName/{cacheName}")
     public AjaxResult clearCacheName(@PathVariable String cacheName)
     {
@@ -103,7 +107,8 @@ public class CacheController
         return AjaxResult.success();
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
+    @PreAuthorize("@ss.hasPermi('monitor:cache:remove')")
+    @Log(title = "缓存清理", businessType = BusinessType.CLEAN, isSaveResponseData = false)
     @DeleteMapping("/clearCacheKey/{cacheKey}")
     public AjaxResult clearCacheKey(@PathVariable String cacheKey)
     {
@@ -111,7 +116,8 @@ public class CacheController
         return AjaxResult.success();
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
+    @PreAuthorize("@ss.hasPermi('monitor:cache:remove')")
+    @Log(title = "缓存清理", businessType = BusinessType.CLEAN, isSaveResponseData = false)
     @DeleteMapping("/clearCacheAll")
     public AjaxResult clearCacheAll()
     {

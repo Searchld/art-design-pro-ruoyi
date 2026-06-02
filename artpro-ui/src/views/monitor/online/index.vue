@@ -19,6 +19,13 @@
     { prop: 'loginLocation', label: '登录地点' },
     { prop: 'browser', label: '浏览器' },
     { prop: 'os', label: '操作系统' },
-    { prop: 'loginTime', label: '登录时间', minWidth: 170 }
+    { prop: 'loginTime', label: '登录时间', minWidth: 170, formatter: formatDateTime }
   ]
+
+  function formatDateTime(row: Record<string, unknown>) {
+    const date = new Date(Number(row.loginTime))
+    if (Number.isNaN(date.getTime())) return '-'
+    const pad = (value: number) => String(value).padStart(2, '0')
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  }
 </script>

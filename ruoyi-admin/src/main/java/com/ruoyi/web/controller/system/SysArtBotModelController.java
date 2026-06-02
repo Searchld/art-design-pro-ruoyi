@@ -84,6 +84,7 @@ public class SysArtBotModelController extends BaseController
     }
 
     @PreAuthorize("@ss.hasPermi('system:artbot:test')")
+    @Log(title = "AI模型连接测试", businessType = BusinessType.OTHER, isSaveResponseData = false)
     @PostMapping("/{modelId}/test")
     public AjaxResult test(@PathVariable Long modelId)
     {
