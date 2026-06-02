@@ -30,7 +30,7 @@
 
         <!-- 菜单按钮 -->
         <ArtIconButton
-          v-if="isLeftMenu && shouldShowMenuButton"
+          v-if="(isLeftMenu || isDualMenu) && shouldShowMenuButton"
           icon="ri:menu-2-fill"
           class="ml-3 max-sm:ml-[7px]"
           @click="visibleMenu"
@@ -66,7 +66,7 @@
         <!-- 搜索 -->
         <div
           v-if="shouldShowGlobalSearch"
-          class="flex-cb w-40 h-9 px-2.5 c-p border border-g-400 rounded-custom-sm max-md:!hidden"
+          class="flex-cb w-30 h-9 px-2.5 c-p border border-g-400 rounded-custom-sm max-md:!hidden"
           @click="openSearchDialog"
         >
           <div class="flex-c">
@@ -126,7 +126,7 @@
 
         <!-- 聊天按钮 -->
         <ArtIconButton
-          v-if="shouldShowChat"
+          v-if="shouldShowChat && hasAuth('artbot:chat:use')"
           icon="ri:message-3-line"
           class="chat-button relative"
           @click="openChat"
@@ -189,6 +189,7 @@
   import { themeAnimation } from '@/utils/ui/animation'
   import { useCommon } from '@/hooks/core/useCommon'
   import { useHeaderBar } from '@/hooks/core/useHeaderBar'
+  import { useAuth } from '@/hooks/core/useAuth'
   import ArtUserMenu from './widget/ArtUserMenu.vue'
 
   defineOptions({ name: 'ArtHeaderBar' })
@@ -204,6 +205,7 @@
   const userStore = useUserStore()
   const menuStore = useMenuStore()
   const noticeStore = useNoticeStore()
+  const { hasAuth } = useAuth()
 
   // 顶部栏功能配置
   const {

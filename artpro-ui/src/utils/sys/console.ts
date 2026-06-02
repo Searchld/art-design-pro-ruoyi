@@ -10,4 +10,4 @@ const asciiArt = `
 \x1b[0m
 `
 
-console.log(asciiArt)
+// console.log(asciiArt)

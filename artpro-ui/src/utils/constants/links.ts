@@ -7,10 +7,16 @@
  */
 export const WEB_LINKS = {
   // Github 主页
-  GITHUB_HOME: 'https://github.com/Searchld/ruoyi-art-design-pro',
+  GITHUB_HOME: 'https://github.com/Searchld/art-design-pro-ruoyi',
 
   // 项目 Github 主页
-  GITHUB: 'https://github.com/Searchld/ruoyi-art-design-pro',
+  GITHUB: 'https://github.com/Searchld/art-design-pro-ruoyi',
+
+  // RuoYi 官网
+  RUOYI_HOME: 'https://ruoyi.vip',
+
+  // RuoYi 文档
+  RUOYI_DOCS: 'https://doc.ruoyi.vip',
 
   // 个人博客
   BLOG: 'https://www.artd.pro',

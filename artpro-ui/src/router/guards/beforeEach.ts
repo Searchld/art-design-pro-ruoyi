@@ -51,6 +51,7 @@ import { useWorktabStore } from '@/store/modules/worktab'
 import { fetchGetUserInfo } from '@/api/auth'
 import { ApiStatus } from '@/utils/http/status'
 import { isHttpError } from '@/utils/http/error'
+import { loadUserUiConfig } from '@/utils/user-ui-config'
 import { RouteRegistry, MenuProcessor, IframeRouteManager, RoutePermissionValidator } from '../core'
 
 // 路由注册器实例
@@ -371,6 +372,7 @@ async function fetchUserInfo(): Promise<void> {
   const userStore = useUserStore()
   const data = await fetchGetUserInfo()
   userStore.setUserInfo(data)
+  await loadUserUiConfig()
   // 检查并清理工作台标签页（如果是不同用户登录）
   userStore.checkAndClearWorktabs()
 }

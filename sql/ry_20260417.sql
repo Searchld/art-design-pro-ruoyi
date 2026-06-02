@@ -764,3 +764,48 @@ set icon = case icon
   when 'logininfor' then 'ri:login-box-line' else 'ri:menu-line'
 end
 where icon is null or icon = '' or icon = '#' or icon not like 'ri:%';
+
+-- Art Bot model configuration and persistent chat history
+drop table if exists sys_artbot_message;
+drop table if exists sys_artbot_conversation;
+drop table if exists sys_artbot_model;
+create table sys_artbot_model (
+  model_id bigint(20) not null auto_increment, model_name varchar(100) not null,
+  base_url varchar(500) not null, api_key varchar(500) not null, model_code varchar(200) not null,
+  status char(1) default '0', is_default char(1) default '0', temperature decimal(3,2) default 0.70,
+  max_tokens int default 2048, system_prompt text, create_by varchar(64) default '', create_time datetime,
+  update_by varchar(64) default '', update_time datetime, remark varchar(500) default null,
+  primary key (model_id)
+) engine=innodb comment='Art Bot模型配置';
+create table sys_artbot_conversation (
+  conversation_id bigint(20) not null auto_increment, user_id bigint(20) not null, model_id bigint(20) not null,
+  title varchar(100) not null, create_time datetime, update_time datetime, primary key (conversation_id),
+  key idx_artbot_conversation_user (user_id, update_time), key idx_artbot_conversation_model (model_id)
+) engine=innodb comment='Art Bot会话';
+create table sys_artbot_message (
+  message_id bigint(20) not null auto_increment, conversation_id bigint(20) not null, role varchar(20) not null,
+  content longtext not null, create_time datetime, primary key (message_id),
+  key idx_artbot_message_conversation (conversation_id, message_id)
+) engine=innodb comment='Art Bot消息';
+
+insert into sys_menu (menu_id, menu_name, parent_id, order_num, path, component, query, route_name, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, remark)
+values (119, 'AI模型管理', 1, 9, 'artbot', 'system/artbot/index', '', 'ArtBotModel', 1, 0, 'C', '0', '0', 'system:artbot:list', 'ri:robot-2-line', 'admin', sysdate(), 'Art Bot模型管理');
+insert into sys_menu (menu_id, menu_name, parent_id, order_num, path, component, query, route_name, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, remark) values
+(1061, '模型查询', 119, 1, '#', '', '', '', 1, 0, 'F', '0', '0', 'system:artbot:query', '#', 'admin', sysdate(), ''),
+(1062, '模型新增', 119, 2, '#', '', '', '', 1, 0, 'F', '0', '0', 'system:artbot:add', '#', 'admin', sysdate(), ''),
+(1063, '模型修改', 119, 3, '#', '', '', '', 1, 0, 'F', '0', '0', 'system:artbot:edit', '#', 'admin', sysdate(), ''),
+(1064, '模型删除', 119, 4, '#', '', '', '', 1, 0, 'F', '0', '0', 'system:artbot:remove', '#', 'admin', sysdate(), ''),
+(1065, '连接测试', 119, 5, '#', '', '', '', 1, 0, 'F', '0', '0', 'system:artbot:test', '#', 'admin', sysdate(), ''),
+(1066, '使用AI助手', 119, 6, '#', '', '', '', 1, 0, 'F', '0', '0', 'artbot:chat:use', '#', 'admin', sysdate(), '');
+insert into sys_role_menu (role_id, menu_id) select role_id, 1066 from sys_role;
+
+-- User interface preferences
+drop table if exists sys_user_ui_setting;
+create table sys_user_ui_setting (
+  user_id bigint(20) not null comment '用户ID',
+  config_key varchar(100) not null comment '界面偏好键名',
+  config_value varchar(500) default '' comment '界面偏好值',
+  update_by varchar(64) default '' comment '更新者',
+  update_time datetime comment '更新时间',
+  primary key (user_id, config_key)
+) engine=innodb comment='用户界面偏好表';

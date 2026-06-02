@@ -1,3 +1,4 @@
+import request from '@/utils/http'
 import { add, get, list, remove, update } from './base'
 import type { Entity, Query } from './types'
 const root = '/system/config'
@@ -8,4 +9,8 @@ export const updateConfig = (data: Entity) => update(root, data)
 export const removeConfig = (ids: string | number) => remove(`${root}/${ids}`)
 export const refreshConfigCache = () => remove(`${root}/refreshCache`)
 export const fetchSiteConfig = () => get<Record<string, string>>(`${root}/site`)
-export const updateSiteConfig = (data: Record<string, string>) => update(`${root}/site`, data)
+export const updateSiteConfig = (data: Record<string, string>) =>
+  request.put<void>({ url: `${root}/site`, data })
+export const fetchUserUiConfig = () => get<Record<string, string>>(`${root}/user-ui`)
+export const updateUserUiConfig = (data: Record<string, string>) =>
+  request.put<void>({ url: `${root}/user-ui`, data })

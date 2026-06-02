@@ -2,8 +2,12 @@
   <div class="art-card p-5 flex-b mb-5 max-sm:mb-4">
     <div>
       <h2 class="text-2xl font-medium">关于项目</h2>
-      <p class="text-g-700 mt-1">{{ systemName }} 是一款兼具设计美学与高效开发的后台系统</p>
-      <p class="text-g-700 mt-1">使用了 Vue3、TypeScript、Vite、Element Plus 等前沿技术</p>
+      <p class="text-g-700 mt-1">
+        {{ systemName }} 融合 Art Design Pro 的现代化界面与 RuoYi 成熟的后台能力
+      </p>
+      <p class="text-g-700 mt-1">
+        前端基于 Vue 3、TypeScript、Vite，后端复用 RuoYi RBAC、菜单权限与数据权限体系
+      </p>
 
       <div class="flex flex-wrap gap-3.5 max-w-150 mt-9">
         <div
@@ -28,10 +32,10 @@
   const systemName = AppConfig.systemInfo.name
 
   const linkList = [
-    { label: '项目官网', url: WEB_LINKS.DOCS },
-    { label: '文档', url: WEB_LINKS.INTRODUCE },
-    { label: 'Github', url: WEB_LINKS.GITHUB_HOME },
-    { label: '哔哩哔哩', url: WEB_LINKS.BILIBILI }
+    { label: '项目 Github', url: WEB_LINKS.GITHUB_HOME },
+    { label: 'Art Design Pro 文档', url: WEB_LINKS.DOCS },
+    { label: 'RuoYi 官网', url: WEB_LINKS.RUOYI_HOME },
+    { label: 'RuoYi 文档', url: WEB_LINKS.RUOYI_DOCS }
   ]
 
   /**

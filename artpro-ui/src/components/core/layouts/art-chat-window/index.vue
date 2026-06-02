@@ -1,262 +1,306 @@
-<!-- 系统聊天窗口 -->
+<!-- Art Bot AI assistant -->
 <template>
-  <div>
-    <ElDrawer v-model="isDrawerVisible" :size="isMobile ? '100%' : '480px'" :with-header="false">
-      <div class="mb-5 flex-cb">
-        <div>
-          <span class="text-base font-medium">Art Bot</span>
-          <div class="mt-1.5 flex-c gap-1">
-            <div
-              class="h-2 w-2 rounded-full"
-              :class="isOnline ? 'bg-success/100' : 'bg-danger/100'"
-            ></div>
-            <span class="text-xs text-g-600">{{ isOnline ? '在线' : '离线' }}</span>
-          </div>
-        </div>
-        <div>
-          <ElIcon class="c-p" :size="20" @click="closeChat">
-            <Close />
-          </ElIcon>
+  <ElDrawer v-model="isDrawerVisible" :size="isMobile ? '100%' : '760px'" :with-header="false">
+    <div class="mb-4 flex-cb">
+      <div>
+        <span class="text-base font-medium">Art Bot</span>
+        <div class="mt-1 flex-c gap-1">
+          <div
+            class="h-2 w-2 rounded-full"
+            :class="isOnline ? 'bg-success/100' : 'bg-danger/100'"
+          />
+          <span class="text-xs text-g-600">{{ isOnline ? '在线' : '暂无可用模型' }}</span>
         </div>
       </div>
-      <div class="flex h-[calc(100%-70px)] flex-col">
-        <!-- 聊天消息区域 -->
-        <div
-          class="flex-1 overflow-y-auto border-t-d px-4 py-7.5 [&::-webkit-scrollbar]:!w-1"
-          ref="messageContainer"
+      <ElIcon class="c-p" :size="20" @click="closeChat"><Close /></ElIcon>
+    </div>
+
+    <div class="flex h-[calc(100%-60px)] min-h-0 gap-3">
+      <aside class="flex w-48 shrink-0 flex-col border-r-d pr-3 max-sm:w-32">
+        <ElButton
+          type="primary"
+          :icon="Plus"
+          :disabled="!models.length || generating"
+          @click="newConversation"
         >
-          <template v-for="(message, index) in messages" :key="index">
+          新建会话
+        </ElButton>
+        <ElSelect
+          v-model="selectedModelId"
+          class="mt-3"
+          placeholder="选择模型"
+          :disabled="generating"
+        >
+          <ElOption
+            v-for="model in models"
+            :key="model.modelId"
+            :label="model.modelName"
+            :value="model.modelId"
+          />
+        </ElSelect>
+        <div class="mt-3 flex-1 overflow-y-auto">
+          <div
+            v-for="item in conversations"
+            :key="item.conversationId"
+            class="group mb-1 flex items-center rounded px-2 py-2 text-sm c-p"
+            :class="
+              item.conversationId === activeConversationId
+                ? 'bg-theme/15 text-theme'
+                : 'hover:bg-g-200/70'
+            "
+            @click="selectConversation(item)"
+          >
+            <span class="min-w-0 flex-1 truncate">{{ item.title }}</span>
+            <ElIcon
+              class="ml-1 hidden shrink-0 group-hover:block"
+              @click.stop="deleteConversation(item)"
+            >
+              <Delete />
+            </ElIcon>
+          </div>
+        </div>
+      </aside>
+
+      <section class="flex min-w-0 flex-1 flex-col">
+        <div
+          ref="messageContainer"
+          class="flex-1 overflow-y-auto border-t-d px-3 py-5 [&::-webkit-scrollbar]:!w-1"
+        >
+          <div
+            v-if="!messages.length"
+            class="flex h-full flex-col items-center justify-center text-center text-g-600"
+          >
+            <ArtSvgIcon icon="ri:robot-2-line" class="mb-3 text-4xl text-theme" />
+            <p class="text-sm">选择模型并发送消息，开始新的对话。</p>
+          </div>
+          <div
+            v-for="message in messages"
+            :key="message.messageId"
+            :class="[
+              'mb-5 flex w-full items-start gap-2',
+              message.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+            ]"
+          >
+            <ElAvatar
+              :size="32"
+              :src="message.role === 'user' ? meAvatar : aiAvatar"
+              class="shrink-0"
+            />
             <div
               :class="[
-                'mb-7.5 flex w-full items-start gap-2',
-                message.isMe ? 'flex-row-reverse' : 'flex-row'
+                'flex max-w-[82%] flex-col',
+                message.role === 'user' ? 'items-end' : 'items-start'
               ]"
             >
-              <ElAvatar :size="32" :src="message.avatar" class="shrink-0" />
+              <div class="mb-1 text-xs text-g-600">{{
+                message.role === 'user' ? userName : 'Art Bot'
+              }}</div>
               <div
-                :class="['flex max-w-[70%] flex-col', message.isMe ? 'items-end' : 'items-start']"
+                v-if="message.role === 'assistant'"
+                class="artbot-markdown rounded-md bg-g-300/50 px-3.5 py-2.5 text-sm leading-6 text-g-900"
+                v-html="renderMarkdown(message.content)"
+              />
+              <div
+                v-else
+                class="whitespace-pre-wrap rounded-md bg-theme/15 px-3.5 py-2.5 text-sm leading-6 text-g-900"
               >
-                <div
-                  :class="[
-                    'mb-1 flex gap-2 text-xs',
-                    message.isMe ? 'flex-row-reverse' : 'flex-row'
-                  ]"
-                >
-                  <span class="font-medium">{{ message.sender }}</span>
-                  <span class="text-g-600">{{ message.time }}</span>
-                </div>
-                <div
-                  :class="[
-                    'rounded-md px-3.5 py-2.5 text-sm leading-[1.4] text-g-900',
-                    message.isMe ? 'message-right bg-theme/15' : 'message-left bg-g-300/50'
-                  ]"
-                  >{{ message.content }}</div
-                >
+                {{ message.content }}
               </div>
             </div>
-          </template>
+          </div>
         </div>
 
-        <!-- 聊天输入区域 -->
-        <div class="px-4 pt-4">
+        <div class="pt-3">
           <ElInput
             v-model="messageText"
             type="textarea"
             :rows="3"
-            placeholder="输入消息"
+            placeholder="输入消息，Enter 发送，Shift + Enter 换行"
             resize="none"
-            @keyup.enter.prevent="sendMessage"
-          >
-            <template #append>
-              <div class="flex gap-2 py-2">
-                <ElButton :icon="Paperclip" circle plain />
-                <ElButton :icon="Picture" circle plain />
-                <ElButton type="primary" @click="sendMessage" v-ripple>发送</ElButton>
-              </div>
-            </template>
-          </ElInput>
-          <div class="mt-3 flex-cb">
-            <div class="flex-c">
-              <ArtSvgIcon icon="ri:image-line" class="mr-5 c-p text-g-600 text-lg" />
-              <ArtSvgIcon icon="ri:emotion-happy-line" class="mr-5 c-p text-g-600 text-lg" />
-            </div>
-            <ElButton type="primary" @click="sendMessage" v-ripple class="min-w-20">发送</ElButton>
+            :disabled="!models.length"
+            @keydown.enter.exact.prevent="sendMessage"
+          />
+          <div class="mt-3 flex justify-end">
+            <ElButton v-if="generating" :icon="VideoPause" @click="stopGeneration"
+              >停止生成</ElButton
+            >
+            <ElButton
+              v-else
+              type="primary"
+              :disabled="!messageText.trim() || !models.length"
+              @click="sendMessage"
+              v-ripple
+            >
+              发送
+            </ElButton>
           </div>
         </div>
-      </div>
-    </ElDrawer>
-  </div>
+      </section>
+    </div>
+  </ElDrawer>
 </template>
 
 <script setup lang="ts">
-  import { Picture, Paperclip, Close } from '@element-plus/icons-vue'
+  import MarkdownIt from 'markdown-it'
+  import DOMPurify from 'dompurify'
+  import { Close, Delete, Plus, VideoPause } from '@element-plus/icons-vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import { mittBus } from '@/utils/sys'
+  import { useUserStore } from '@/store/modules/user'
   import meAvatar from '@/assets/images/avatar/avatar5.webp'
   import aiAvatar from '@/assets/images/avatar/avatar10.webp'
+  import {
+    createArtBotConversation,
+    fetchArtBotConversations,
+    fetchArtBotMessages,
+    fetchAvailableArtBotModels,
+    removeArtBotConversation,
+    streamArtBotMessage,
+    type ArtBotConversation,
+    type ArtBotMessage,
+    type ArtBotModel
+  } from '@/api/system/artbot'
 
   defineOptions({ name: 'ArtChatWindow' })
-
-  // 类型定义
-  interface ChatMessage {
-    id: number
-    sender: string
-    content: string
-    time: string
-    isMe: boolean
-    avatar: string
-  }
-
-  // 常量定义
-  const MOBILE_BREAKPOINT = 640
-  const SCROLL_DELAY = 100
-  const BOT_NAME = 'Art Bot'
-  const USER_NAME = 'Ricky'
-
-  // 响应式布局
   const { width } = useWindowSize()
-  const isMobile = computed(() => width.value < MOBILE_BREAKPOINT)
-
-  // 组件状态
+  const userStore = useUserStore()
+  const markdown = new MarkdownIt({ breaks: true, linkify: true })
+  const isMobile = computed(() => width.value < 640)
   const isDrawerVisible = ref(false)
-  const isOnline = ref(true)
-
-  // 消息相关状态
+  const models = ref<ArtBotModel[]>([])
+  const conversations = ref<ArtBotConversation[]>([])
+  const messages = ref<ArtBotMessage[]>([])
+  const selectedModelId = ref<number>()
+  const activeConversationId = ref<number>()
   const messageText = ref('')
-  const messageId = ref(10)
-  const messageContainer = ref<HTMLElement | null>(null)
+  const generating = ref(false)
+  const messageContainer = ref<HTMLElement>()
+  let abortController: AbortController | undefined
+  let localMessageId = 0
 
-  // 初始化聊天消息数据
-  const initializeMessages = (): ChatMessage[] => [
-    {
-      id: 1,
-      sender: BOT_NAME,
-      content: '你好！我是你的AI助手，有什么我可以帮你的吗？',
-      time: '10:00',
-      isMe: false,
-      avatar: aiAvatar
-    },
-    {
-      id: 2,
-      sender: USER_NAME,
-      content: '我想了解一下系统的使用方法。',
-      time: '10:01',
-      isMe: true,
-      avatar: meAvatar
-    },
-    {
-      id: 3,
-      sender: BOT_NAME,
-      content: '好的，我来为您介绍系统的主要功能。首先，您可以通过左侧菜单访问不同的功能模块...',
-      time: '10:02',
-      isMe: false,
-      avatar: aiAvatar
-    },
-    {
-      id: 4,
-      sender: USER_NAME,
-      content: '听起来很不错，能具体讲讲数据分析部分吗？',
-      time: '10:05',
-      isMe: true,
-      avatar: meAvatar
-    },
-    {
-      id: 5,
-      sender: BOT_NAME,
-      content: '当然可以。数据分析模块可以帮助您实时监控关键指标，并生成详细的报表...',
-      time: '10:06',
-      isMe: false,
-      avatar: aiAvatar
-    },
-    {
-      id: 6,
-      sender: USER_NAME,
-      content: '太好了，那我如何开始使用呢？',
-      time: '10:08',
-      isMe: true,
-      avatar: meAvatar
-    },
-    {
-      id: 7,
-      sender: BOT_NAME,
-      content: '您可以先创建一个项目，然后在项目中添加相关的数据源，系统会自动进行分析。',
-      time: '10:09',
-      isMe: false,
-      avatar: aiAvatar
-    },
-    {
-      id: 8,
-      sender: USER_NAME,
-      content: '明白了，谢谢你的帮助！',
-      time: '10:10',
-      isMe: true,
-      avatar: meAvatar
-    },
-    {
-      id: 9,
-      sender: BOT_NAME,
-      content: '不客气，有任何问题随时联系我。',
-      time: '10:11',
-      isMe: false,
-      avatar: aiAvatar
-    }
-  ]
-
-  const messages = ref<ChatMessage[]>(initializeMessages())
-
-  // 工具函数
-  const formatCurrentTime = (): string => {
-    return new Date().toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  const scrollToBottom = (): void => {
+  const isOnline = computed(() => models.value.length > 0)
+  const userName = computed(() => userStore.info.userName || '我')
+  const renderMarkdown = (content: string) => DOMPurify.sanitize(markdown.render(content || ''))
+  const scrollToBottom = () =>
     nextTick(() => {
-      setTimeout(() => {
-        if (messageContainer.value) {
-          messageContainer.value.scrollTop = messageContainer.value.scrollHeight
-        }
-      }, SCROLL_DELAY)
+      if (messageContainer.value)
+        messageContainer.value.scrollTop = messageContainer.value.scrollHeight
     })
+
+  async function loadConversations() {
+    conversations.value = await fetchArtBotConversations()
   }
-
-  // 消息处理方法
-  const sendMessage = (): void => {
-    const text = messageText.value.trim()
-    if (!text) return
-
-    const newMessage: ChatMessage = {
-      id: messageId.value++,
-      sender: USER_NAME,
-      content: text,
-      time: formatCurrentTime(),
-      isMe: true,
-      avatar: meAvatar
+  async function selectConversation(conversation: ArtBotConversation) {
+    if (generating.value) return
+    activeConversationId.value = conversation.conversationId
+    selectedModelId.value = conversation.modelId
+    messages.value = await fetchArtBotMessages(conversation.conversationId)
+    scrollToBottom()
+  }
+  async function newConversation() {
+    if (!selectedModelId.value) return
+    const conversation = await createArtBotConversation(selectedModelId.value)
+    await loadConversations()
+    await selectConversation(conversation)
+  }
+  async function deleteConversation(conversation: ArtBotConversation) {
+    await ElMessageBox.confirm(`确定删除会话“${conversation.title}”吗？`, '提示', {
+      type: 'warning'
+    })
+    await removeArtBotConversation(conversation.conversationId)
+    if (activeConversationId.value === conversation.conversationId) {
+      activeConversationId.value = undefined
+      messages.value = []
     }
-
-    messages.value.push(newMessage)
+    await loadConversations()
+  }
+  async function sendMessage() {
+    const content = messageText.value.trim()
+    if (!content || generating.value || !selectedModelId.value) return
+    if (!activeConversationId.value) await newConversation()
+    if (!activeConversationId.value) return
+    const conversationId = activeConversationId.value
+    messages.value.push({
+      messageId: `local-user-${++localMessageId}`,
+      conversationId,
+      role: 'user',
+      content
+    })
+    const answer: ArtBotMessage = {
+      messageId: `local-ai-${++localMessageId}`,
+      conversationId,
+      role: 'assistant',
+      content: ''
+    }
+    messages.value.push(answer)
     messageText.value = ''
+    generating.value = true
+    abortController = new AbortController()
     scrollToBottom()
+    try {
+      await streamArtBotMessage(
+        conversationId,
+        content,
+        userStore.accessToken,
+        (chunk) => {
+          answer.content += chunk
+          scrollToBottom()
+        },
+        abortController.signal
+      )
+      await loadConversations()
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        ElMessage.error((error as Error).message || '生成失败')
+        if (!answer.content) answer.content = '生成失败，请稍后重试。'
+      }
+    } finally {
+      generating.value = false
+      abortController = undefined
+    }
   }
-
-  // 聊天窗口控制方法
-  const openChat = (): void => {
+  function stopGeneration() {
+    abortController?.abort()
+    generating.value = false
+  }
+  async function openChat() {
     isDrawerVisible.value = true
-    scrollToBottom()
+    try {
+      models.value = await fetchAvailableArtBotModels()
+      selectedModelId.value =
+        models.value.find((item) => item.isDefault === '1')?.modelId || models.value[0]?.modelId
+      await loadConversations()
+      if (conversations.value[0]) await selectConversation(conversations.value[0])
+    } catch {
+      models.value = []
+    }
   }
-
-  const closeChat = (): void => {
+  function closeChat() {
+    stopGeneration()
     isDrawerVisible.value = false
   }
-
-  // 生命周期
-  onMounted(() => {
-    scrollToBottom()
-    mittBus.on('openChat', openChat)
-  })
-
+  onMounted(() => mittBus.on('openChat', openChat))
   onUnmounted(() => {
+    stopGeneration()
     mittBus.off('openChat', openChat)
   })
 </script>
+
+<style scoped>
+  .artbot-markdown :deep(p:last-child) {
+    margin-bottom: 0;
+  }
+  .artbot-markdown :deep(pre) {
+    overflow-x: auto;
+    border-radius: 6px;
+    background: var(--art-gray-200);
+    padding: 10px;
+  }
+  .artbot-markdown :deep(code) {
+    font-family: monospace;
+  }
+  .artbot-markdown :deep(ul),
+  .artbot-markdown :deep(ol) {
+    padding-left: 18px;
+  }
+</style>

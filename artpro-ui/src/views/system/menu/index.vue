@@ -221,7 +221,13 @@
       span: 12,
       props: { min: 0 }
     },
-    { key: 'showTextBadge', label: '文本徽章', span: 12, hidden: form.displayType === 'F' },
+    {
+      key: 'showTextBadge',
+      label: '文本徽章',
+      span: 12,
+      hidden: form.displayType === 'F',
+      props: { clearable: true, placeholder: '如：New、Hot' }
+    },
     { key: 'activePath', label: '激活路径', span: 12, hidden: form.displayType !== 'C' },
     { key: 'enabled', label: '是否启用', type: 'switch', span: 6 },
     { key: 'hidden', label: '隐藏菜单', type: 'switch', span: 6, hidden: form.displayType === 'F' },
@@ -392,7 +398,8 @@
       fixedTab: data.fixedTab ? '1' : '0',
       isFullPage: data.isFullPage ? '1' : '0',
       newTab: data.newTab ? '1' : '0',
-      icon: data.displayType === 'F' ? '#' : normalizeLocalIcon(data.icon)
+      icon: data.displayType === 'F' ? '#' : normalizeLocalIcon(data.icon),
+      showTextBadge: data.showTextBadge || ''
     }
     if (isLinkType.value) {
       payload.menuType = Number(data.parentId) === 0 ? 'M' : 'C'

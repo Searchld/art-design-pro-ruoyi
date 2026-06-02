@@ -70,14 +70,11 @@
   } from '@/api/system/config'
   import { useDict } from '@/hooks/core/useDict'
   import { useAuth } from '@/hooks/core/useAuth'
-  import { useSettingStore } from '@/store/modules/setting'
   import { loadSiteConfig } from '@/utils/site-config'
-  import { ContainerWidthEnum, MenuThemeEnum, MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
 
   defineOptions({ name: 'SystemConfig' })
   const { hasAuth } = useAuth()
   const { dict } = useDict('sys_yes_no')
-  const settingStore = useSettingStore()
   const activeTab = ref('site'),
     siteTab = ref('identity'),
     saving = ref(false)
@@ -114,37 +111,7 @@
         field('site.watermark.show-time', '叠加当前时间', 'select', { options: yesNo })
       ]
     },
-    {
-      name: 'appearance',
-      label: '界面风格',
-      items: [
-        field('ui.theme.mode', '主题风格', 'select', {
-          options: [option('跟随系统', 'auto'), option('亮色', 'light'), option('暗色', 'dark')]
-        }),
-        field('ui.menu.layout', '菜单布局', 'select', {
-          options: [
-            option('左侧菜单', 'left'),
-            option('顶部菜单', 'top'),
-            option('顶部 + 左侧', 'top-left'),
-            option('双栏菜单', 'dual-menu')
-          ]
-        }),
-        field('ui.menu.style', '菜单风格', 'select', {
-          options: [option('设计风格', 'design'), option('亮色', 'light'), option('暗色', 'dark')]
-        }),
-        field('ui.theme.color', '系统主题色'),
-        field('ui.box.style', '盒子样式', 'select', {
-          options: [option('边框', 'border'), option('阴影', 'shadow')]
-        }),
-        field('ui.container.width', '容器宽度', 'select', {
-          options: [option('全屏', '100%'), option('定宽', '1200px')]
-        }),
-        field('ui.watermark.enabled', '公共水印', 'select', { options: yesNo }),
-        field('ui.tabs.enabled', '多页签', 'select', { options: yesNo }),
-        field('ui.breadcrumb.enabled', '面包屑', 'select', { options: yesNo }),
-        field('ui.menu.accordion', '菜单手风琴', 'select', { options: yesNo })
-      ]
-    },
+    // 界面风格统一由右上角设置面板维护，避免出现两个配置入口。
     {
       name: 'security',
       label: '登录与安全',
@@ -175,16 +142,6 @@
     'site.watermark.content': '',
     'site.watermark.mode': 'username',
     'site.watermark.show-time': 'false',
-    'ui.theme.mode': 'auto',
-    'ui.menu.layout': 'left',
-    'ui.menu.style': 'design',
-    'ui.theme.color': '#5D87FF',
-    'ui.box.style': 'border',
-    'ui.container.width': '100%',
-    'ui.watermark.enabled': 'false',
-    'ui.tabs.enabled': 'true',
-    'ui.breadcrumb.enabled': 'true',
-    'ui.menu.accordion': 'true',
     'sys.account.captchaType': 'slider',
     'sys.account.registerUser': 'false',
     'security.access-token-hours': '2',
@@ -221,19 +178,6 @@
         originalKeys.map((key) => [key, String(siteForm[keyOf(key)] ?? '')])
       )
       await updateSiteConfig(values)
-      settingStore.$patch({
-        menuType: values['ui.menu.layout'] as MenuTypeEnum,
-        menuThemeType: values['ui.menu.style'] as MenuThemeEnum,
-        systemThemeType: values['ui.theme.mode'] as SystemThemeEnum,
-        systemThemeMode: values['ui.theme.mode'] as SystemThemeEnum,
-        boxBorderMode: values['ui.box.style'] === 'border',
-        containerWidth: values['ui.container.width'] as ContainerWidthEnum,
-        watermarkVisible: values['ui.watermark.enabled'] === 'true',
-        showWorkTab: values['ui.tabs.enabled'] === 'true',
-        showCrumbs: values['ui.breadcrumb.enabled'] === 'true',
-        uniqueOpened: values['ui.menu.accordion'] === 'true'
-      })
-      settingStore.setElementTheme(values['ui.theme.color'])
       await loadSiteConfig()
       ElMessage.success('站点配置已保存')
     } finally {

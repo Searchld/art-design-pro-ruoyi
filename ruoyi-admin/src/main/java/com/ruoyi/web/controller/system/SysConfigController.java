@@ -47,16 +47,6 @@ public class SysConfigController extends BaseController
         SITE_CONFIGS.put("site.watermark.content", "公共水印内容");
         SITE_CONFIGS.put("site.watermark.mode", "水印内容模式");
         SITE_CONFIGS.put("site.watermark.show-time", "水印叠加时间");
-        SITE_CONFIGS.put("ui.theme.mode", "主题风格");
-        SITE_CONFIGS.put("ui.menu.layout", "菜单布局");
-        SITE_CONFIGS.put("ui.menu.style", "菜单风格");
-        SITE_CONFIGS.put("ui.theme.color", "系统主题色");
-        SITE_CONFIGS.put("ui.box.style", "盒子样式");
-        SITE_CONFIGS.put("ui.container.width", "容器宽度");
-        SITE_CONFIGS.put("ui.watermark.enabled", "开启公共水印");
-        SITE_CONFIGS.put("ui.tabs.enabled", "开启多页签");
-        SITE_CONFIGS.put("ui.breadcrumb.enabled", "显示面包屑");
-        SITE_CONFIGS.put("ui.menu.accordion", "菜单手风琴");
         SITE_CONFIGS.put("sys.account.captchaType", "验证码类型");
         SITE_CONFIGS.put("sys.account.registerUser", "开放用户注册");
         SITE_CONFIGS.put("security.access-token-hours", "访问令牌有效时长");
