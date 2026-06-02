@@ -1,5 +1,13 @@
 # Art Design Pro RuoYi
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-6DB33F.svg)](https://spring.io/projects/spring-boot)
+[![Vue](https://img.shields.io/badge/Vue-3-42B883.svg)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org/)
+[![Demo](https://img.shields.io/badge/demo-online-orange.svg)](https://art.beta.kim/)
+
+![Art Design Pro RuoYi](docs/images/social-preview.png)
+
 基于 **RuoYi-Vue 后端** 与 **Art Design Pro 前端** 整合的现代化后台管理系统。
 
 本项目保留 RuoYi 成熟的权限体系、系统管理、系统监控与代码生成能力，使用 Art Design Pro / artpro-ui 替换传统前端界面。目标不是重写 RuoYi，而是在兼容原有接口和 RBAC 模型的基础上，提供更现代的 Vue 3 管理后台体验。
@@ -73,6 +81,17 @@
 - 内置可配置的 Art Bot AI 助手，支持 OpenAI Chat Completions 兼容接口、多模型选择、SSE 流式输出和历史会话。
 - 操作日志复用 RuoYi 审计机制，并将缓存详情、缓存清理等敏感操作拆分为独立权限。
 - 代码生成器新增 Art Design Pro TypeScript 模板，生成结果直接复用 Art 表格、搜索、表单、抽屉和权限封装。
+
+## 为什么选择本项目
+
+| 能力 | 传统 RuoYi-Vue | 仅替换界面的整合项目 | Art Design Pro RuoYi |
+| --- | --- | --- | --- |
+| RuoYi RBAC、JWT、数据权限 | 支持 | 通常保留 | 完整复用 |
+| Vue 3 现代化后台界面 | 不支持 | 支持 | 支持 |
+| Art 风格动态菜单与按钮权限 | 不支持 | 部分适配 | 完整适配 |
+| 直接生成 Art 页面代码 | 不支持 | 通常不支持 | 支持 |
+| 可配置 AI 助手 | 不支持 | 通常不支持 | 支持 |
+| 用户级主题与菜单布局入库 | 不支持 | 通常仅本地存储 | 支持 |
 
 ## 技术栈
 
@@ -369,6 +388,8 @@ http://localhost:3006
 - Element Plus 仅用于 Art 未覆盖的基础组件。
 
 详细适配说明见：[docs/ruoyi-art-plan.md](docs/ruoyi-art-plan.md)。
+
+参与项目开发前请阅读：[CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 致谢
 
