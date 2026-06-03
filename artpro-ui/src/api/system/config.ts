@@ -11,6 +11,6 @@ export const refreshConfigCache = () => remove(`${root}/refreshCache`)
 export const fetchSiteConfig = () => get<Record<string, string>>(`${root}/site`)
 export const updateSiteConfig = (data: Record<string, string>) =>
   request.put<void>({ url: `${root}/site`, data })
-export const fetchUserUiConfig = () => get<Record<string, string>>(`${root}/user-ui`)
+export const fetchUserUiConfig = () => get<Record<string, string>>('/system/user-ui')
 export const updateUserUiConfig = (data: Record<string, string>) =>
-  request.put<void>({ url: `${root}/user-ui`, data })
+  request.put<void>({ url: '/system/user-ui', data })

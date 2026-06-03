@@ -17,7 +17,7 @@ import com.ruoyi.system.service.ISysUserUiSettingService;
  * 当前用户界面偏好
  */
 @RestController
-@RequestMapping("/system/config/user-ui")
+@RequestMapping("/system/user-ui")
 public class SysUserUiSettingController extends BaseController
 {
     private static final Set<String> ALLOWED_KEYS = Set.of(
