@@ -36,6 +36,31 @@
 密码：admin123
 ```
 
+### 最新功能动图
+
+![Art Design Pro RuoYi 演示动图](docs/videos/artpro-ruoyi-demo.gif)
+
+### 核心功能截图
+
+<table>
+  <tr>
+    <td><img src="docs/images/screenshots/dashboard-console.jpg" alt="现代化工作台"></td>
+    <td><img src="docs/images/screenshots/code-generator.jpg" alt="Art 风格代码生成"></td>
+  </tr>
+  <tr>
+    <td align="center">现代化工作台</td>
+    <td align="center">Art 风格代码生成</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/screenshots/model-management.jpg" alt="AI 模型管理"></td>
+    <td><img src="docs/images/screenshots/artbot-chat.jpg" alt="Art Bot 智能助手"></td>
+  </tr>
+  <tr>
+    <td align="center">AI 模型管理</td>
+    <td align="center">Art Bot 智能助手</td>
+  </tr>
+</table>
+
 ### 登录页
 
 ![Art Design Pro RuoYi 登录页](docs/images/login-orange.png)
