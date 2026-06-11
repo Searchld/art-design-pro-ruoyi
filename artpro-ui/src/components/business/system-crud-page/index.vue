@@ -78,6 +78,7 @@
     table?: boolean
     form?: boolean
     search?: boolean
+    span?: number
     options?: Array<Record<string, any>>
     dict?: Array<Record<string, any>>
     props?: Record<string, any>
@@ -137,7 +138,7 @@
         label: field.label,
         type: field.type || 'input',
         render: field.render,
-        span: 12,
+        span: field.span ?? 12,
         props: { clearable: true, ...field.props, options: normalizeOptions(field.options) }
       }))
   )
@@ -187,10 +188,9 @@
                       'onUpdate:modelValue': (status: string | number | boolean) =>
                         changeStatus(row, String(status))
                     })
-                : field.type === 'select'
+                : field.dict
                   ? (row: Entity) => {
-                      const options = props.fields.find((item) => item.prop === field.prop)
-                        ?.dict as DictData[] | undefined
+                      const options = field.dict as DictData[] | undefined
                       return options?.length
                         ? h(DictTag, {
                             options,
@@ -207,24 +207,31 @@
           fixed: 'right',
           minWidth: 220,
           formatter: (row: Entity) =>
-            h('div', { style: 'display:flex;align-items:center;justify-content:flex-end;gap:10px;white-space:nowrap' }, [
-              hasAuth(`${props.permission}:query`)
-                ? h(ArtButtonTable, { type: 'view', onClick: () => openDialog(row, 'view') })
-                : null,
-              hasAuth(`${props.permission}:edit`)
-                ? h(ArtButtonTable, { type: 'edit', onClick: () => openDialog(row, 'edit') })
-                : null,
-              hasAuth(`${props.permission}:remove`)
-                ? h(ArtButtonTable, { type: 'delete', onClick: () => handleRemove(row) })
-                : null,
-              props.actions?.length
-                ? h(ArtButtonMore, {
-                    list: props.actions,
-                    onClick: (item: { key: string | number }) =>
-                      props.actions?.find((action) => action.key === item.key)?.handler(row)
-                  })
-                : null
-            ])
+            h(
+              'div',
+              {
+                style:
+                  'display:flex;align-items:center;justify-content:flex-end;gap:10px;white-space:nowrap'
+              },
+              [
+                hasAuth(`${props.permission}:query`)
+                  ? h(ArtButtonTable, { type: 'view', onClick: () => openDialog(row, 'view') })
+                  : null,
+                hasAuth(`${props.permission}:edit`)
+                  ? h(ArtButtonTable, { type: 'edit', onClick: () => openDialog(row, 'edit') })
+                  : null,
+                hasAuth(`${props.permission}:remove`)
+                  ? h(ArtButtonTable, { type: 'delete', onClick: () => handleRemove(row) })
+                  : null,
+                props.actions?.length
+                  ? h(ArtButtonMore, {
+                      list: props.actions,
+                      onClick: (item: { key: string | number }) =>
+                        props.actions?.find((action) => action.key === item.key)?.handler(row)
+                    })
+                  : null
+              ]
+            )
         })
         return result
       }

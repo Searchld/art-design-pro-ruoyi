@@ -68,10 +68,25 @@ public class TokenService
     {
         // 获取请求携带的令牌
         String token = getToken(request);
+        return getLoginUser(token);
+    }
+
+    /**
+     * 获取用户身份信息
+     *
+     * @param token 令牌
+     * @return 用户信息
+     */
+    public LoginUser getLoginUser(String token)
+    {
         if (StringUtils.isNotEmpty(token))
         {
             try
             {
+                if (token.startsWith(Constants.TOKEN_PREFIX))
+                {
+                    token = token.replace(Constants.TOKEN_PREFIX, "");
+                }
                 Claims claims = parseToken(token);
                 // 解析对应的权限以及用户信息
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);

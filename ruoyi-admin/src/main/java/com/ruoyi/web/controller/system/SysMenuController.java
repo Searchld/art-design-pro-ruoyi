@@ -24,7 +24,7 @@ import com.ruoyi.system.service.ISysMenuService;
 
 /**
  * 菜单信息
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -158,7 +158,7 @@ public class SysMenuController extends BaseController
         }
         if (menuService.checkMenuExistRole(menuId))
         {
-            return warn("菜单已分配,不允许删除");
+            return warn("菜单已分配角色,不允许删除");
         }
         return toAjax(menuService.deleteMenuById(menuId));
     }

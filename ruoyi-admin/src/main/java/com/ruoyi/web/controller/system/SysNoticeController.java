@@ -22,6 +22,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.SysNotice;
 import com.ruoyi.system.service.ISysNoticeReadService;
 import com.ruoyi.system.service.ISysNoticeService;
+import com.ruoyi.web.service.SysNoticeBroadcastService;
 
 /**
  * 公告 信息操作处理
@@ -37,6 +38,9 @@ public class SysNoticeController extends BaseController
 
     @Autowired
     private ISysNoticeReadService noticeReadService;
+
+    @Autowired
+    private SysNoticeBroadcastService noticeBroadcastService;
 
     /**
      * 获取通知公告列表
@@ -68,7 +72,12 @@ public class SysNoticeController extends BaseController
     public AjaxResult add(@Validated @RequestBody SysNotice notice)
     {
         notice.setCreateBy(getUsername());
-        return toAjax(noticeService.insertNotice(notice));
+        int rows = noticeService.insertNotice(notice);
+        if (rows > 0)
+        {
+            noticeBroadcastService.created(notice);
+        }
+        return toAjax(rows);
     }
 
     /**
@@ -80,7 +89,12 @@ public class SysNoticeController extends BaseController
     public AjaxResult edit(@Validated @RequestBody SysNotice notice)
     {
         notice.setUpdateBy(getUsername());
-        return toAjax(noticeService.updateNotice(notice));
+        int rows = noticeService.updateNotice(notice);
+        if (rows > 0)
+        {
+            noticeBroadcastService.updated(notice);
+        }
+        return toAjax(rows);
     }
 
     /**
@@ -152,6 +166,11 @@ public class SysNoticeController extends BaseController
     public AjaxResult remove(@PathVariable Long[] noticeIds)
     {
         noticeReadService.deleteByNoticeIds(noticeIds);
-        return toAjax(noticeService.deleteNoticeByIds(noticeIds));
+        int rows = noticeService.deleteNoticeByIds(noticeIds);
+        if (rows > 0)
+        {
+            noticeBroadcastService.deleted(noticeIds);
+        }
+        return toAjax(rows);
     }
 }

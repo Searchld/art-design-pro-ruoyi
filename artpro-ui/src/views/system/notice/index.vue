@@ -12,8 +12,9 @@
       :remove-fn="removeNotice"
       :actions="actions"
       :defaults="{ noticeType: '1', status: '0' }"
+      drawer-size="960px"
     />
-    <ElDrawer v-model="visible" title="已读用户" size="680px">
+    <ElDrawer v-model="visible" title="已读用户" size="960px">
       <ElTable :data="readUsers"
         ><ElTableColumn prop="userName" label="用户名称" /><ElTableColumn
           prop="nickName"
@@ -46,7 +47,7 @@
     {
       prop: 'noticeType',
       label: '公告类型',
-      type: 'select',
+      type: 'radiogroup',
       options: dict.sys_notice_type,
       dict: dict.sys_notice_type,
       required: true,
@@ -67,6 +68,7 @@
       label: '公告内容',
       table: false,
       required: true,
+      span: 24,
       render: () => h(ArtWangEditor)
     }
   ])

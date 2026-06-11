@@ -14,9 +14,19 @@
  */
 
 import { addCollection, iconLoaded } from '@iconify/vue'
+import eosIcons from '@iconify-json/eos-icons/icons.json'
+import epIcons from '@iconify-json/ep/icons.json'
+import lineMdIcons from '@iconify-json/line-md/icons.json'
 import riIcons from '@iconify-json/ri/icons.json'
+import svgSpinnersIcons from '@iconify-json/svg-spinners/icons.json'
+import tablerIcons from '@iconify-json/tabler/icons.json'
 
 addCollection(riIcons)
+addCollection(epIcons)
+addCollection(tablerIcons)
+addCollection(lineMdIcons)
+addCollection(svgSpinnersIcons)
+addCollection(eosIcons)
 
 const fallbackIcon = 'ri:menu-line'
 
@@ -48,5 +58,5 @@ const legacyIconMap: Record<string, string> = {
 
 export function normalizeLocalIcon(icon?: string): string {
   const candidate = legacyIconMap[icon || ''] || icon || fallbackIcon
-  return candidate.startsWith('ri:') && iconLoaded(candidate) ? candidate : fallbackIcon
+  return iconLoaded(candidate) ? candidate : fallbackIcon
 }
